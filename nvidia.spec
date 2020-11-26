@@ -4,7 +4,7 @@
 Summary:	Binary-only driver for nvidia graphics chips
 Name:		nvidia
 Version:	450.80.02
-Release:	2
+Release:	3
 ExclusiveArch:	%{x86_64} %{znver1}
 Url:		http://www.nvidia.com/object/unix.html
 Source0:	http://us.download.nvidia.com/XFree86/Linux-x86_64/%{version}/NVIDIA-Linux-x86_64-%{version}.run
@@ -54,7 +54,7 @@ This package should only be used as a last resort.
 
 %package kernel-modules-desktop
 %define kversion 5.9.11-1
-%define kdir 5.9.10-desktop-1omv4002
+%define kdir 5.9.11-desktop-1omv4002
 Summary:	Kernel modules needed by the binary-only nvidia driver
 Provides:	%{name}-kernel-modules = %{EVRD}
 Requires:	kernel-release-desktop = %{kversion}
