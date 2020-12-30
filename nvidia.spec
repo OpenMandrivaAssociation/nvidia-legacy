@@ -55,7 +55,7 @@ This package should only be used as a last resort.
 
 %package kernel-modules-desktop
 %define kversion 5.10.3
-%define kdir 5.10.3-desktop-1omv4002
+%define kdir 5.10.3-desktop-2omv4002
 Summary:	Kernel modules needed by the binary-only nvidia driver
 Provides:	%{name}-kernel-modules = %{EVRD}
 Requires:	kernel-release-desktop = %{kversion}
