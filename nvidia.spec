@@ -9,7 +9,8 @@ ExclusiveArch:	%{x86_64} %{znver1}
 Url:		http://www.nvidia.com/object/unix.html
 Source0:	http://us.download.nvidia.com/XFree86/Linux-x86_64/%{version}/NVIDIA-Linux-x86_64-%{version}.run
 Source1:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11-extra/nvidia/xorg-nvidia.conf	
-Source2:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11-extra/nvidia/modprobe-nvidia.conf	
+Source2:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11-extra/nvidia/modprobe-nvidia.conf
+Patch0:         nvidia-fix-linux-5.10.patch	
 Group:		Hardware
 License:	distributable
 # Just to be on the safe side, it may not be wise
@@ -53,8 +54,8 @@ This package should only be used as a last resort.
 %endif
 
 %package kernel-modules-desktop
-%define kversion 5.9.11-1
-%define kdir 5.9.11-desktop-1omv4002
+%define kversion 5.10.3
+%define kdir 5.10.3-desktop-1omv4002
 Summary:	Kernel modules needed by the binary-only nvidia driver
 Provides:	%{name}-kernel-modules = %{EVRD}
 Requires:	kernel-release-desktop = %{kversion}
@@ -70,8 +71,8 @@ BuildRequires:	kernel-release-desktop-devel
 Kernel modules needed by the binary-only nvidia driver
 
 %package kernel-modules-server
-%define skversion 5.9.11-1
-%define skdir 5.9.11-server-1omv4002
+%define skversion 5.10.3
+%define skdir 5.10.3-server-2omv4002
 Summary:	Kernel modules needed by the binary-only nvidia driver
 Provides:	%{name}-kernel-modules = %{EVRD}
 Requires:	kernel-release-server = %{skversion}
@@ -123,6 +124,7 @@ Kernel modules needed by the binary-only nvidia driver
 %prep
 %setup -T -c %{name}-%{version}
 sh %{S:0} --extract-only
+%patch0 -p1
 
 %build
 cd NVIDIA-Linux-x86_64-%{version}
