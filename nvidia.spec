@@ -54,8 +54,8 @@ This package should only be used as a last resort.
 %endif
 
 %package kernel-modules-desktop
-%define kversion 5.10.6
-%define kdir 5.10.6-desktop-1omv4002
+%define kversion %(rpm -q --qf '%%{VERSION}-%%{RELEASE}\\n' kernel-release-desktop-devel |tail -n1)
+%define kdir %(rpm -q --qf '%%{VERSION}-desktop-%%{RELEASE}%%{DISTTAG}\\n' kernel-release-desktop-devel |tail -n1)
 Summary:	Kernel modules needed by the binary-only nvidia driver
 Provides:	%{name}-kernel-modules = %{EVRD}
 Requires:	kernel-release-desktop = %{kversion}
@@ -70,9 +70,26 @@ BuildRequires:	kernel-release-desktop-devel
 %description kernel-modules-desktop
 Kernel modules needed by the binary-only nvidia driver
 
+%package kernel-modules-desktop-clang
+%define ckversion %(rpm -q --qf '%%{VERSION}-%%{RELEASE}\\n' kernel-release-desktop-clang-devel |tail -n1)
+%define ckdir %(rpm -q --qf '%%{VERSION}-desktop-clang-%%{RELEASE}%%{DISTTAG}\\n' kernel-release-desktop-clang-devel |tail -n1)
+Summary:	Kernel modules needed by the binary-only nvidia driver
+Provides:	%{name}-kernel-modules = %{EVRD}
+Requires:	kernel-release-desktop-clang = %{kversion}
+#Conflicts:	kernel-release-desktop < %%{kversion}
+Conflicts:	kernel-release-desktop-clang > %{kversion}
+#Conflicts:	%%{name}-kernel-modules < %%{kversion}
+Group:		Hardware
+Provides:	should-restart = system
+Requires(post,postun):	sed dracut grub2 kmod
+BuildRequires:	kernel-release-desktop-clang-devel
+
+%description kernel-modules-desktop-clang
+Kernel modules needed by the binary-only nvidia driver
+
 %package kernel-modules-server
-%define skversion 5.10.6
-%define skdir 5.10.6-server-1omv4002
+%define skversion %(rpm -q --qf '%%{VERSION}-%%{RELEASE}\\n' kernel-release-server-devel |tail -n1)
+%define skdir %(rpm -q --qf '%%{VERSION}-desktop-%%{RELEASE}%%{DISTTAG}\\n' kernel-release-server-devel |tail -n1)
 Summary:	Kernel modules needed by the binary-only nvidia driver
 Provides:	%{name}-kernel-modules = %{EVRD}
 Requires:	kernel-release-server = %{skversion}
@@ -85,6 +102,23 @@ Requires(post,postun):	sed dracut grub2 kmod
 BuildRequires:	kernel-release-server-devel
 
 %description kernel-modules-server
+Kernel modules needed by the binary-only nvidia driver
+
+%package kernel-modules-server-clang
+%define cskversion %(rpm -q --qf '%%{VERSION}-%%{RELEASE}\\n' kernel-release-server-clang-devel |tail -n1)
+%define cskdir %(rpm -q --qf '%%{VERSION}-desktop-clang-%%{RELEASE}%%{DISTTAG}\\n' kernel-release-server-clang-devel |tail -n1)
+Summary:	Kernel modules needed by the binary-only nvidia driver
+Provides:	%{name}-kernel-modules = %{EVRD}
+Requires:	kernel-release-server-clang = %{kversion}
+#Conflicts:	kernel-release-desktop < %%{kversion}
+Conflicts:	kernel-release-server-clang > %{kversion}
+#Conflicts:	%%{name}-kernel-modules < %%{kversion}
+Group:		Hardware
+Provides:	should-restart = system
+Requires(post,postun):	sed dracut grub2 kmod
+BuildRequires:	kernel-release-server-clang-devel
+
+%description kernel-modules-server-clang
 Kernel modules needed by the binary-only nvidia driver
 
 %if %{with kernel_rc}
@@ -130,6 +164,8 @@ sh %{S:0} --extract-only
 cd NVIDIA-Linux-x86_64-%{version}
 
 cp -a kernel kernel-server
+cp -a kernel kernel-clang
+cp -a kernel kernel-server-clang
 
 %if %{with kernel_rc}
 cp -a kernel kernel-rc
@@ -139,8 +175,14 @@ cp -a kernel kernel-rc-server
 cd kernel
 make SYSSRC=%{_prefix}/src/linux-%{kdir} CC=%{_bindir}/gcc
 
+cd ../kernel-clang
+make SYSSRC=%{_prefix}/src/linux-%{ckdir} CC=%{_bindir}/clang IGNORE_CC_MISMATCH=1
+
 cd ../kernel-server
 make SYSSRC=%{_prefix}/src/linux-%{skdir} CC=%{_bindir}/gcc
+
+cd ../kernel-server-clang
+make SYSSRC=%{_prefix}/src/linux-%{cskdir} CC=%{_bindir}/clang IGNORE_CC_MISMATCH=1
 
 %if %{with kernel_rc}
 cd ../kernel-rc
@@ -290,11 +332,23 @@ inst /lib/modules/%{kdir}/kernel/drivers/video/nvidia-drm.ko
 inst /lib/modules/%{kdir}/kernel/drivers/video/nvidia-modeset.ko
 inst /lib/modules/%{kdir}/kernel/drivers/video/nvidia-uvm.ko
 
+cd ../kernel-clang
+inst /lib/modules/%{ckdir}/kernel/drivers/video/nvidia.ko
+inst /lib/modules/%{ckdir}/kernel/drivers/video/nvidia-drm.ko
+inst /lib/modules/%{ckdir}/kernel/drivers/video/nvidia-modeset.ko
+inst /lib/modules/%{ckdir}/kernel/drivers/video/nvidia-uvm.ko
+
 cd ../kernel-server
 inst /lib/modules/%{skdir}/kernel/drivers/video/nvidia.ko
 inst /lib/modules/%{skdir}/kernel/drivers/video/nvidia-drm.ko
 inst /lib/modules/%{skdir}/kernel/drivers/video/nvidia-modeset.ko
 inst /lib/modules/%{skdir}/kernel/drivers/video/nvidia-uvm.ko
+
+cd ../kernel-server-clang
+inst /lib/modules/%{cskdir}/kernel/drivers/video/nvidia.ko
+inst /lib/modules/%{cskdir}/kernel/drivers/video/nvidia-drm.ko
+inst /lib/modules/%{cskdir}/kernel/drivers/video/nvidia-modeset.ko
+inst /lib/modules/%{cskdir}/kernel/drivers/video/nvidia-uvm.ko
 
 %files
 %{_libdir}/xorg/modules/drivers/nvidia_drv.so
@@ -376,6 +430,21 @@ sed -i 's/rd.driver.blacklist=nouveau //g' %{_sysconfdir}/default/grub
 /usr/bin/dracut -f --kver %{kdir}
 %{_sbindir}/update-grub2
 
+%files kernel-modules-desktop-clang
+/lib/modules/%{ckdir}/kernel/drivers/video/*
+
+%post kernel-modules-desktop-clang
+sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="rd.driver.blacklist=nouveau /' %{_sysconfdir}/default/grub
+/sbin/depmod -a %{ckdir}
+/usr/bin/dracut -f --kver %{ckdir}
+%{_sbindir}/update-grub2
+
+%postun kernel-modules-desktop-clang
+sed -i 's/rd.driver.blacklist=nouveau //g' %{_sysconfdir}/default/grub
+/sbin/depmod -a %{ckdir}
+/usr/bin/dracut -f --kver %{ckdir}
+%{_sbindir}/update-grub2
+
 %files kernel-modules-server
 /lib/modules/%{skdir}/kernel/drivers/video/*
 
@@ -389,6 +458,21 @@ sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="rd.driver.bla
 sed -i 's/rd.driver.blacklist=nouveau //g' %{_sysconfdir}/default/grub
 /sbin/depmod -a %{skdir}
 /usr/bin/dracut -f --kver %{skdir}
+%{_sbindir}/update-grub2
+
+%files kernel-modules-server-clang
+/lib/modules/%{cskdir}/kernel/drivers/video/*
+
+%post kernel-modules-server-clang
+sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="rd.driver.blacklist=nouveau /' %{_sysconfdir}/default/grub
+/sbin/depmod -a %{cskdir}
+/usr/bin/dracut -f --kver %{cskdir}
+%{_sbindir}/update-grub2
+
+%postun kernel-modules-server-clang
+sed -i 's/rd.driver.blacklist=nouveau //g' %{_sysconfdir}/default/grub
+/sbin/depmod -a %{cskdir}
+/usr/bin/dracut -f --kver %{cskdir}
 %{_sbindir}/update-grub2
 
 %if %{with kernel_rc}
