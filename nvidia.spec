@@ -17,6 +17,7 @@ License:	distributable
 # to load clang-built modules into a gcc-built kernel
 BuildRequires:	gcc
 Requires:	%{name}-kernel-modules = %{EVRD}
+Requires:	egl-wayland
 
 %description
 This is a binary-only driver for nvidia graphics chips.
