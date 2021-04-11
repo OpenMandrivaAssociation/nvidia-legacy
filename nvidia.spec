@@ -3,11 +3,11 @@
 
 Summary:	Binary-only driver for nvidia graphics chips
 Name:		nvidia
-Version:	460.39
+Version:	460.67
 Release:	1
 ExclusiveArch:	%{x86_64}
 Url:		http://www.nvidia.com/object/unix.html
-Source0:	http://us.download.nvidia.com/XFree86/Linux-x86_64/%{version}/NVIDIA-Linux-x86_64-%{version}.run
+Source0:	http://download.nvidia.com/XFree86/Linux-x86_64/%{version}/NVIDIA-Linux-x86_64-%{version}.run
 Source1:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11-extra/nvidia/xorg-nvidia.conf	
 Source2:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11-extra/nvidia/modprobe-nvidia.conf
 Patch0:         nvidia-fix-linux-5.10.patch	
@@ -17,7 +17,10 @@ License:	distributable
 # to load clang-built modules into a gcc-built kernel
 BuildRequires:	gcc
 Requires:	%{name}-kernel-modules = %{EVRD}
-Requires:	egl-wayland
+#FIXME#
+# /usr/lib64/libnvidia-egl-wayland.so.1 conflicts between attempted installs of nvidia-460.67-1.x86_64 and lib64nvidia-egl-wayland1-1.1.6-1.x86_64
+# So disable it for now, until someone knowledgeable about NVIDIA has time to fix this problem.
+#Requires:	egl-wayland
 
 %description
 This is a binary-only driver for nvidia graphics chips.
