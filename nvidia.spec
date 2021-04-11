@@ -17,7 +17,10 @@ License:	distributable
 # to load clang-built modules into a gcc-built kernel
 BuildRequires:	gcc
 Requires:	%{name}-kernel-modules = %{EVRD}
-Requires:	egl-wayland
+#FIXME#
+# /usr/lib64/libnvidia-egl-wayland.so.1 conflicts between attempted installs of nvidia-460.67-1.x86_64 and lib64nvidia-egl-wayland1-1.1.6-1.x86_64
+# So disable it for now, until someone knowledgeable about NVIDIA has time to fix this problem.
+#Requires:	egl-wayland
 
 %description
 This is a binary-only driver for nvidia graphics chips.
