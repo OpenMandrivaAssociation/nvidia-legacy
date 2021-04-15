@@ -3,7 +3,7 @@
 
 Summary:	Binary-only driver for nvidia graphics chips
 Name:		nvidia
-Version:	460.67
+Version:	465.24.02
 Release:	1
 ExclusiveArch:	%{x86_64}
 Url:		http://www.nvidia.com/object/unix.html
