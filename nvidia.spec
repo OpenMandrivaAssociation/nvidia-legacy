@@ -4,7 +4,7 @@
 Summary:	Binary-only driver for nvidia graphics chips
 Name:		nvidia
 Version:	465.27
-Release:	3
+Release:	4
 ExclusiveArch:	%{x86_64}
 Url:		http://www.nvidia.com/object/unix.html
 Source0:	http://download.nvidia.com/XFree86/Linux-x86_64/%{version}/NVIDIA-Linux-x86_64-%{version}.run
@@ -17,10 +17,9 @@ License:	distributable
 # to load clang-built modules into a gcc-built kernel
 BuildRequires:	gcc
 Requires:	%{name}-kernel-modules = %{EVRD}
-#FIXME#
-# /usr/lib64/libnvidia-egl-wayland.so.1 conflicts between attempted installs of nvidia-460.67-1.x86_64 and lib64nvidia-egl-wayland1-1.1.6-1.x86_64
-# So disable it for now, until someone knowledgeable about NVIDIA has time to fix this problem.
-#Requires:	egl-wayland
+Requires:	libglvnd-egl
+Requires:	egl-wayland
+Requires:	vulkan-loader
 
 %description
 This is a binary-only driver for nvidia graphics chips.
@@ -300,14 +299,6 @@ ln -s libvdpau_nvidia.so.%{version} %{buildroot}%{_libdir}/vdpau/libvdpau_nvidia
 ln -s libvdpau_nvidia.so.%{version} %{buildroot}%{_libdir}/vdpau/libvdpau_nvidia.so.1
 ln -s libvdpau_nvidia.so.%{version} %{buildroot}%{_libdir}/vdpau/libvdpau_nvidia.so
 
-# Wayland
-# FIXME can this be replaced by https://github.com/NVIDIA/egl-wayland ?
-wlibso=$(ls libnvidia-egl-wayland.so* | sed 's/.*so.\(.*\)/\1/')
-instx %{_libdir}/libnvidia-egl-wayland.so.$wlibso
-ln -s libnvidia-egl-wayland.so.$wlibso %{buildroot}%{_libdir}/libnvidia-egl-wayland.so.1
-ln -s libnvidia-egl-wayland.so.$wlibso %{buildroot}%{_libdir}/libnvidia-egl-wayland.so
-inst %{_datadir}/egl/egl_external_platform.d/10_nvidia_wayland.json
-
 # Tools
 for i in *.1.gz; do
 	gunzip $i
@@ -382,8 +373,6 @@ inst /lib/modules/%{cskdir}/kernel/drivers/video/nvidia-uvm.ko
 %{_libdir}/libnvidia-gtk3.so*
 %{_libdir}/libnvidia-ifr.so*
 %{_libdir}/vdpau/libvdpau_nvidia.so*
-%{_libdir}/libnvidia-egl-wayland.so*
-%{_datadir}/egl/egl_external_platform.d/10_nvidia_wayland.json
 %{_bindir}/nvidia-bug-report.sh
 %{_bindir}/nvidia-smi
 %{_mandir}/man1/nvidia-smi.1*
