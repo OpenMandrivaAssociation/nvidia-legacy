@@ -4,12 +4,13 @@
 Summary:	Binary-only driver for nvidia graphics chips
 Name:		nvidia
 Version:	470.94
-Release:	4
-ExclusiveArch:	%{x86_64}
+Release:	5
+ExclusiveArch:	%{x86_64} %{aarch64}
 Url:		http://www.nvidia.com/object/unix.html
 Source0:	http://download.nvidia.com/XFree86/Linux-x86_64/%{version}/NVIDIA-Linux-x86_64-%{version}.run
-Source1:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11-extra/nvidia/xorg-nvidia.conf	
-Source2:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11-extra/nvidia/modprobe-nvidia.conf
+Source1:	http://download.nvidia.com/XFree86/Linux-aarch64/NVIDIA-Linux-aarch64-%{version}.run
+Source10:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11-extra/nvidia/xorg-nvidia.conf
+Source11:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11-extra/nvidia/modprobe-nvidia.conf
 Patch0:         nvidia-fix-linux-5.10.patch	
 Group:		Hardware
 License:	distributable
@@ -160,11 +161,23 @@ Kernel modules needed by the binary-only nvidia driver
 
 %prep
 %setup -T -c %{name}-%{version}
+%ifarch %{x86_64}
 sh %{S:0} --extract-only
+%else
+%ifarch %{aarch64}
+sh %{S:1} --extract-only
+%endif
+%endif
 #%%patch0 -p1
 
 %build
+%ifarch %{x86_64}
 cd NVIDIA-Linux-x86_64-%{version}
+%else
+%ifarch %{aarch64}
+cd NVIDIA-Linux-aarch64-%{version}
+%endif
+%endif
 
 cp -a kernel kernel-server
 cp -a kernel kernel-clang
@@ -196,7 +209,13 @@ make SYSSRC=%{_prefix}/src/linux-%{rskdir} CC=%{_bindir}/gcc IGNORE_CC_MISMATCH=
 %endif
 
 %install
+%ifarch %{x86_64}
 cd NVIDIA-Linux-x86_64-%{version}
+%else
+%ifarch %{aarch64}
+cd NVIDIA-Linux-aarch64-%{version}
+%endif
+%endif
 
 inst() {
 	install -m 644 -D $(basename $1) %{buildroot}"$1"
@@ -317,8 +336,8 @@ inst %{_datadir}/nvidia/nvidia-application-profiles-%{version}-rc
 inst %{_datadir}/nvidia/nvidia-application-profiles-%{version}-key-documentation
 
 # Configs
-install -D -m 644 %{S:1} %{buildroot}%{_sysconfdir}/X11/xorg.conf.d/15-nvidia.conf
-install -D -m 644 %{S:2} %{buildroot}%{_sysconfdir}/modprobe.d/nvidia.conf
+install -D -m 644 %{S:10} %{buildroot}%{_sysconfdir}/X11/xorg.conf.d/15-nvidia.conf
+install -D -m 644 %{S:11} %{buildroot}%{_sysconfdir}/modprobe.d/nvidia.conf
 
 # Kernel modules
 cd kernel
