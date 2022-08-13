@@ -1,9 +1,13 @@
-%define debug_package %{nil}
+%global debug_package %{nil}
+%global version_major 470
+%global version_minor 141
+%global version_patch 03
+
 %bcond_with kernel_rc
 
-Summary:	Binary-only driver for nvidia graphics chips
-Name:		nvidia
-Version:	470.129.06
+Summary:	Binary-only driver for nvidia graphics chips, version %{version_major}
+Name:		nvidia-legacy
+Version:	%{version_major}.%{version_minor}.%{version_patch}
 Release:	1
 ExclusiveArch:	%{x86_64} %{aarch64}
 Url:		http://www.nvidia.com/object/unix.html
