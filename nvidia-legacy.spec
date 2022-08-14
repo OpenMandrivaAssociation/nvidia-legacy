@@ -4,12 +4,13 @@
 %global version_patch 03
 %global _dracut_conf_d  %{_prefix}/lib/dracut/dracut.conf.d
 %global _modprobe_d     %{_prefix}/lib/modprobe.d/
+%global persistenced_source %{_builddir}/nvidia-persistenced-%{version}
 %define _tar_end %{?extension}%{?!extension:gz}
 %ifarch x86_64
-%global extracted_source %{_builddir}/NVIDIA-Linux-x86_64-%{version}
+%global driver_folder %{_builddir}/NVIDIA-Linux-x86_64-%{version}
 %endif
 %ifarch aarch64
-%global extracted_source %{_builddir}/NVIDIA-Linux-aarch64-%{version}
+%global driver_folder %{_builddir}/NVIDIA-Linux-aarch64-%{version}
 %endif
 
 # =======================================================================================#
@@ -52,6 +53,9 @@ Requires:       x11-server-xorg >= 1.19.0-3
 
 Provides:       %{name} = %{version}
 Obsoletes:      xorg-x11-drv-nvidia
+Conflicts:      nvidia
+Conflicts:      nvidia-current
+Conflicts:      nvidia-390
 Conflicts:      catalyst-x11-drv
 Conflicts:      catalyst-x11-drv-legacy
 Conflicts:      fglrx-x11-drv
@@ -175,7 +179,7 @@ remote graphics scenarios.
 %package NVML
 Summary:        NVIDIA Management Library (NVML)
 Requires(post): ldconfig
-Provides:       cuda-nvml%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{name}-cuda-nvml%{?_isa} = %{version}-%{release}
 
 %description NVML
 A C-based API for monitoring and managing various states of the NVIDIA GPU
@@ -188,9 +192,9 @@ to be a platform for building 3rd party applications.
 %package cuda
 Summary:        CUDA integration for %{name}
 Conflicts:      xorg-x11-drv-nvidia-cuda
-Requires:       %{name}-cuda-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}
+Requires:       %{name}-cuda-libs%{?_isa} = %{version}
 %ifnarch aarch64
-Requires:       nvidia-persistenced = %{?epoch:%{epoch}:}%{version}
+Requires:       %{name}-persistenced = %{version}
 %endif
 Requires:       opencl-filesystem
 Requires:       ocl-icd
@@ -227,8 +231,8 @@ Source10:   dkms-nvidia.conf
 
 BuildRequires:  sed
 
-Provides:       dkms-kmod = %{version}
-Requires:       kmod-common = %{version}
+Provides:       %{name}-kmod = %{version}
+Requires:       %{name}-kmod-common = %{version}
 Requires:       dkms
 
 %description dkms-kmod
@@ -260,9 +264,9 @@ Source11:   nvidia.conf
 
 BuildRequires:  systemd-rpm-macros
 
-Requires:       nvidia-kmod = %{?epoch:%{epoch}:}%{version}
-Provides:       nvidia-kmod-common = %{?epoch:%{epoch}:}%{version}
-Requires:       nvidia-driver = %{?epoch:%{epoch}:}%{version}
+Requires:       %{name}-kmod = %{?epoch:%{epoch}:}%{version}
+Provides:       %{name}-kmod-common = %{?epoch:%{epoch}:}%{version}
+Requires:       %{name} = %{?epoch:%{epoch}:}%{version}
 Obsoletes:      cuda-nvidia-kmod-common
 
 %description kmod-common
@@ -301,7 +305,7 @@ releasing device state when the device is not in use. This can improve the
 startup time of new clients in this scenario.
 
 %prep
-rm -rf %{extracted_source}
+rm -rf %{driver_folder}
 rm -rf nvidia-persistenced-%{version}
 # persistenced
 %setup -T -b 12 -q -n nvidia-persistenced-%{version}
@@ -319,10 +323,10 @@ sh %{S:0} --extract-only
 %ifarch %{aarch64}
 sh %{S:1} --extract-only
 %endif
-cp -f %{SOURCE10} %{extracted_source}/kernel/dkms.conf
-sed -i -e 's/__VERSION_STRING/%{version}/g' %{extracted_source}/kernel/dkms.conf
+cp -f %{SOURCE10} %{driver_folder}/kernel/dkms.conf
+sed -i -e 's/__VERSION_STRING/%{version}/g' %{driver_folder}/kernel/dkms.conf
 
-cd %{extracted_source}
+cd %{driver_folder}
 
 # Create symlinks for shared objects
 ldconfig -vn .
@@ -352,7 +356,7 @@ ln -sf libGLX_nvidia.so.%{version} libGLX_indirect.so.0
 cat ./nvidia_icd.json > nvidia_icd.%{_target_cpu}.json
 
 %build
-cd %{_builddir}/nvidia-persistenced-%{version}
+cd %{persistenced_source}
 export CFLAGS="%{optflags} -I%{_includedir}/tirpc"
 export LDFLAGS="%{?__global_ldflags} -ltirpc"
 make %{?_smp_mflags} \
@@ -363,7 +367,7 @@ make %{?_smp_mflags} \
     STRIP_CMD=true
 
 %install
-cd %{_builddir}/nvidia-persistenced-%{version}
+cd %{persistenced_source}
 %make_install \
     NV_VERBOSE=1 \
     PREFIX=%{_prefix} \
@@ -374,7 +378,7 @@ mkdir -p %{buildroot}%{_sharedstatedir}/nvidia-persistenced
 # Systemd unit files
 install -p -m 644 -D %{SOURCE13} %{buildroot}%{_unitdir}/nvidia-persistenced.service
 
-cd %{extracted_source}
+cd %{driver_folder}
 mkdir -p %{buildroot}%{_datadir}/glvnd/egl_vendor.d/
 mkdir -p %{buildroot}%{_datadir}/vulkan/icd.d/
 mkdir -p %{buildroot}%{_datadir}/egl/egl_external_platform.d/
@@ -426,16 +430,31 @@ install -p -m 0755 nvidia.icd %{buildroot}%{_sysconfdir}/OpenCL/vendors/
 
 # Binaries
 install -p -m 0755 nvidia-{debugdump,smi,cuda-mps-control,cuda-mps-server,bug-report.sh} %{buildroot}%{_bindir}
+install -p -m 0755 nvidia-settings %{buildroot}%{_bindir}
+
+# Install desktop file
+sed -i 's:__PIXMAP_PATH__:%{_datadir}/pixmaps:g' nvidia-settings.desktop
+mkdir -p %{buildroot}%{_datadir}/{applications,pixmaps}
+desktop-file-install --dir %{buildroot}%{_datadir}/applications/ nvidia-settings.desktop
+cp nvidia-settings.png %{buildroot}%{_datadir}/pixmaps/
 
 %ifarch x86_64
 mkdir -p %{buildroot}%{_dbus_systemd_dir}/
 # not present in 470
 #install -p -m 0755 nvidia-powerd %%{buildroot}%%{_bindir}
-cp -r %{extracted_source}/32/* %{buildroot}%{_prefix}/lib/
+cp -r %{driver_folder}/32/* %{buildroot}%{_prefix}/lib/
 %endif
 
 # Man pages
-install -p -m 0644 nvidia-{smi,cuda-mps-control}*.gz %{buildroot}%{_mandir}/man1/
+install -p -m 0644 nvidia-{smi,cuda-mps-control,settings}*.gz %{buildroot}%{_mandir}/man1/
+
+# license and doc files
+mkdir -p %{buildroot}%{_docdir}/%{name}
+mkdir -p %{buildroot}%{_datadir}/licenses/%{name}
+cp %{driver_folder}/LICENSE %{buildroot}%{_datadir}/licenses/%{name}
+cp %{driver_folder}/NVIDIA_Changelog %{buildroot}%{_docdir}/%{name}
+cp %{driver_folder}/README.txt %{buildroot}%{_docdir}/%{name}
+cp -r %{driver_folder}/html %{buildroot}%{_docdir}/%{name}
 
 # install AppData and add modalias provides
 install -p -m 0644 %{SOURCE8} %{buildroot}%{_datadir}/appdata/
@@ -552,9 +571,12 @@ install -p -m 0755 systemd/system-sleep/nvidia %{buildroot}%{_systemd_util_dir}/
 %ifnarch %{ix86}
 
 %files
-#%license LICENSE
-#%doc NVIDIA_Changelog README.txt html
-
+%license LICENSE
+%doc NVIDIA_Changelog README.txt html
+%{_bindir}/nvidia-settings
+%{_mandir}/man1/nvidia-settings.1*
+%{_datarootdir}/pixmaps/nvidia-settings.png
+%{_datarootdir}/applications/nvidia-settings.desktop
 %dir %{_sysconfdir}/nvidia
 %{_bindir}/nvidia-bug-report.sh
 %{_datadir}/appdata/com.nvidia.driver.metainfo.xml
@@ -587,7 +609,7 @@ install -p -m 0755 systemd/system-sleep/nvidia %{buildroot}%{_systemd_util_dir}/
 %{_bindir}/nvidia-cuda-mps-server
 %{_bindir}/nvidia-debugdump
 %ifarch x86_64
-# not found in 470
+# not present in 470
 #%%{_bindir}/nvidia-powerd
 %endif
 %{_bindir}/nvidia-smi
@@ -628,11 +650,11 @@ install -p -m 0755 systemd/system-sleep/nvidia %{buildroot}%{_systemd_util_dir}/
 %ifarch x86_64 ppc64le aarch64
 %{_libdir}/libnvidia-cfg.so.1
 %{_libdir}/libnvidia-cfg.so.%{version}
-# not found in 470
+# not present in 470
 #%%{_libdir}/libnvidia-egl-gbm.so.1
 #%%{_libdir}/libnvidia-egl-gbm.so.1.1.0
 %{_libdir}/gbm/nvidia-drm_gbm.so
-# not found in 470
+# not present in 470
 #%%{_datadir}/egl/egl_external_platform.d/15_nvidia_gbm.json
 %endif
 %{_libdir}/libnvidia-eglcore.so.%{version}
@@ -659,7 +681,7 @@ install -p -m 0755 systemd/system-sleep/nvidia %{buildroot}%{_systemd_util_dir}/
 %{_libdir}/libnvidia-allocator.so.1
 %{_libdir}/libnvidia-allocator.so.%{version}
 %{_libdir}/libnvidia-egl-wayland.so.1
-# not found in 470
+# not present in 470
 #%%{_libdir}/libnvidia-egl-wayland.so.1.1.9
 %{_libdir}/libnvidia-glvkspirv.so.%{version}
 %{_libdir}/libnvidia-gtk2.so.%{version}
@@ -677,7 +699,7 @@ install -p -m 0755 systemd/system-sleep/nvidia %{buildroot}%{_systemd_util_dir}/
 %{_libdir}/libnvidia-encode.so.1
 %{_libdir}/libnvidia-encode.so.%{version}
 %{_libdir}/libnvidia-nvvm.so.4
-# not found in 470
+# not present in 470
 #%%{_libdir}/libnvidia-nvvm.so.%%{version}
 %{_libdir}/libnvidia-opticalflow.so.1
 %{_libdir}/libnvidia-opticalflow.so.%{version}
@@ -689,7 +711,7 @@ install -p -m 0755 systemd/system-sleep/nvidia %{buildroot}%{_systemd_util_dir}/
 %{_libdir}/libnvidia-vulkan-producer.so.%{version}
 %endif
 %ifarch x86_64
-# not found in 470
+# not present in 470
 #%%{_libdir}/libnvidia-wayland-client.so.%%{version}
 %endif
 
@@ -762,13 +784,13 @@ dkms remove -m %{name}-dkms-kmod -v %{version} -q --all || :
 %{_usrsrc}/dkms-kmod-%{version}
 
 %post kmod-common
-sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="rd.driver.blacklist=nouveau /' %{_sysconfdir}/default/grub
+sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="rd.driver.blacklist=nouveau nosimplefb=1/' %{_sysconfdir}/default/grub
 /sbin/depmod -a
 /usr/bin/dracut -f
 %{_sbindir}/update-grub2
 
 %postun kmod-common
-sed -i 's/rd.driver.blacklist=nouveau //g' %{_sysconfdir}/default/grub
+sed -i 's/rd.driver.blacklist=nouveau nosimplefb=1 //g' %{_sysconfdir}/default/grub
 /sbin/depmod -a
 /usr/bin/dracut -f
 %{_sbindir}/update-grub2
@@ -795,7 +817,7 @@ exit 0
 %systemd_postun_with_restart nvidia-persistenced.service
 
 %files persistenced
-#%license COPYING
+%license COPYING
 %{_mandir}/man1/nvidia-persistenced.1.*
 %{_bindir}/nvidia-persistenced
 %{_unitdir}/nvidia-persistenced.service
