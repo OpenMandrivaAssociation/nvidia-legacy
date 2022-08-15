@@ -1,4 +1,5 @@
 %global debug_package %{nil}
+%global dkms_name nvidia
 %global version_major 470
 %global version_minor 141
 %global version_patch 03
@@ -227,12 +228,13 @@ URL:            http://www.nvidia.com/object/unix.html
 
 # Package is not noarch as it contains pre-compiled binary code
 ExclusiveArch:  x86_64 ppc64le aarch64
-Source10:   dkms-nvidia.conf
+Source10:   dkms-%{dkms_name}.conf
 
 BuildRequires:  sed
 
 Provides:       %{name}-kmod = %{version}
 Requires:       %{name}-kmod-common = %{version}
+Requires:       %{name}-kmod-headers = %{version}
 Requires:       dkms
 
 %description dkms-kmod
@@ -240,12 +242,12 @@ This package provides the proprietary Nvidia kernel driver modules.
 The modules are rebuilt through the DKMS system when a new kernel or modules
 become available.
 
-%package -n kmod-headers
+%package kmod-headers
 Summary:        NVIDIA header files for precompiled streams
 AutoReq:        0
 Conflicts:      kmod-nvidia-latest-dkms
 
-%description -n kmod-headers
+%description kmod-headers
 NVIDIA header files for precompiled streams
 
 # =======================================================================================#
@@ -254,7 +256,7 @@ NVIDIA header files for precompiled streams
 
 %package kmod-common
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
-License:        NVIDIA License
+License:        NVIDIA Licensefile:///home/nreist/Development/Source/Repos/nvidia-legacy/nvidia-legacy.spec
 URL:            http://www.nvidia.com/object/unix.html
 
 BuildArch:      noarch
@@ -306,13 +308,12 @@ startup time of new clients in this scenario.
 
 %prep
 rm -rf %{driver_folder}
-rm -rf nvidia-persistenced-%{version}
+rm -rf %{persistenced_source}
+
 # persistenced
-%setup -T -b 12 -q -n nvidia-persistenced-%{version}
+%setup -T -b 12 -q -n %{persistenced_source}
 # Remove additional CFLAGS added when enabling DEBUG
 sed -i -e '/+= -O0 -g/d' utils.mk
-
-
 # end persistenced
 
 cd %{_builddir}
@@ -342,7 +343,8 @@ ln -sf libcuda.so.%{version} libcuda.so
 # Required for building additional applications agains the driver stack
 ln -sf libnvidia-ml.so.%{version}               libnvidia-ml.so
 ln -sf libnvidia-ptxjitcompiler.so.%{version}   libnvidia-ptxjitcompiler.so
-ln -sf libnvidia-nvvm.so.%{version}             libnvidia-nvvm.so
+# not provided in 470
+#ln -sf libnvidia-nvvm.so.%%{version}             libnvidia-nvvm.so
 %ifnarch %{ix86}
 ln -sf libnvidia-cfg.so.%{version}              libnvidia-cfg.so
 %endif
@@ -387,8 +389,8 @@ mkdir -p %{buildroot}%{_libdir}/vdpau/
 
 # dkms-kmod
 # Create empty tree
-mkdir -p %{buildroot}%{_usrsrc}/dkms-kmod-%{version}/
-cp -fr kernel/* %{buildroot}%{_usrsrc}/dkms-kmod-%{version}/
+mkdir -p %{buildroot}%{_usrsrc}/%{dkms_name}-%{version}/
+cp -fr kernel/* %{buildroot}%{_usrsrc}/%{dkms_name}-%{version}/
 
 mkdir -p %{buildroot}%{_udevrulesdir}
 mkdir -p %{buildroot}%{_modprobe_d}/
@@ -624,7 +626,8 @@ install -p -m 0755 systemd/system-sleep/nvidia %{buildroot}%{_systemd_util_dir}/
 %{_libdir}/libnvidia-encode.so
 %{_libdir}/libnvidia-ml.so
 %{_libdir}/libnvidia-ptxjitcompiler.so
-%{_libdir}/libnvidia-nvvm.so
+# not provided in 470
+#%%{_libdir}/libnvidia-nvvm.so
 %ifnarch %{ix86}
 %{_libdir}/libnvidia-cfg.so
 %endif
@@ -768,29 +771,29 @@ install -p -m 0755 systemd/system-sleep/nvidia %{buildroot}%{_systemd_util_dir}/
 %endif
 
 %post dkms-kmod
-dkms add -m %{name}-dkms-kmod -v %{version} -q || :
+dkms add -m %{dkms_name}-v %{version} || :
 # Rebuild and make available for the currently running kernel
-dkms build -m %{name}-dkms-kmod -v %{version} -q || :
-dkms install -m %{name}-dkms-kmod -v %{version} -q --force || :
+dkms build -m %{dkms_name} -v %{version} || :
+dkms install -m %{dkms_name} -v %{version} --force || :
 
 %preun dkms-kmod
 # Remove all versions from DKMS registry
-dkms remove -m %{name}-dkms-kmod -v %{version} -q --all || :
+dkms remove -m %{dkms_name} -v %{version} --all || :
 
 %files dkms-kmod
-%{_usrsrc}/dkms-kmod-%{version}
+%{_usrsrc}/%{dkms_name}-%{version}
 
-%files -n kmod-headers
-%{_usrsrc}/dkms-kmod-%{version}
+%files kmod-headers
+%{_usrsrc}/%{dkms_name}-%{version}
 
 %post kmod-common
-sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="rd.driver.blacklist=nouveau nosimplefb=1/' %{_sysconfdir}/default/grub
+sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="rd.driver.blacklist=nouveau /' %{_sysconfdir}/default/grub
 /sbin/depmod -a
 /usr/bin/dracut -f
 %{_sbindir}/update-grub2
 
 %postun kmod-common
-sed -i 's/rd.driver.blacklist=nouveau nosimplefb=1 //g' %{_sysconfdir}/default/grub
+sed -i 's/rd.driver.blacklist=nouveau //g' %{_sysconfdir}/default/grub
 /sbin/depmod -a
 /usr/bin/dracut -f
 %{_sbindir}/update-grub2
