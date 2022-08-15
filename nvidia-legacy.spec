@@ -6,7 +6,7 @@
 %global _dracut_conf_d  %{_prefix}/lib/dracut/dracut.conf.d
 %global _modprobe_d     %{_prefix}/lib/modprobe.d/
 %global persistenced_source %{_builddir}/nvidia-persistenced-%{version}
-%define _tar_end %{?extension}%{?!extension:gz}
+%define _tar_end %{?extension}%{?!extension:bz2}
 %ifarch x86_64
 %global driver_folder %{_builddir}/NVIDIA-Linux-x86_64-%{version}
 %endif
