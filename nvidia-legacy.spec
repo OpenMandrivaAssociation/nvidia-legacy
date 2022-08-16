@@ -197,8 +197,8 @@ Requires:       %{name}-cuda-libs%{?_isa} = %{version}
 %ifnarch aarch64
 Requires:       %{name}-persistenced = %{version}
 %endif
-Requires:       opencl-filesystem
-Requires:       ocl-icd
+#Requires:       opencl-filesystem
+Requires:       lib64OpenCL-devel
 
 %description cuda
 This package provides the CUDA integration components for %{name}.
