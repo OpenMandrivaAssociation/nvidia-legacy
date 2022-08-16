@@ -220,7 +220,7 @@ Summary:        NVIDIA display driver kernel module. **This is an unsupported pr
 URL:            http://www.nvidia.com/object/unix.html
 
 # Package is not noarch as it contains pre-compiled binary code
-ExclusiveArch:  x86_64 ppc64le aarch64
+ExclusiveArch:  %{x86_64} ppc64le %{aarch64}
 Source10:   dkms-%{dkms_name}.conf
 
 BuildRequires:  sed
@@ -275,7 +275,7 @@ package variants.
 %package persistenced
 Summary:        A daemon to maintain persistent software state in the NVIDIA driver
 URL:            http://www.nvidia.com/object/unix.html
-ExclusiveArch:  %{ix86} x86_64 ppc64le aarch64
+ExclusiveArch:  %{ix86} %{x86_64} ppc64le %{aarch64}
 
 Source12:        https://download.nvidia.com/XFree86/nvidia-persistenced/nvidia-persistenced-%{version}.tar.%{_tar_end}
 Source13:        nvidia-persistenced.service
@@ -402,7 +402,7 @@ install -p -m 0644 %{SOURCE6} %{buildroot}%{_dracut_conf_d}/
 # https://github.com/negativo17/nvidia-driver/issues/27
 install -p -m 644 %{SOURCE4} %{buildroot}%{_udevrulesdir}
 
-%ifarch x86_64 aarch64 ppc64le
+%ifarch %{x86_64} %{aarch64} ppc64le
 
 mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_datadir}/nvidia/
@@ -434,7 +434,7 @@ mkdir -p %{buildroot}%{_datadir}/{applications,pixmaps}
 desktop-file-install --dir %{buildroot}%{_datadir}/applications/ nvidia-settings.desktop
 cp nvidia-settings.png %{buildroot}%{_datadir}/pixmaps/
 
-%ifarch x86_64
+%ifarch %{x86_64}
 mkdir -p %{buildroot}%{_dbus_systemd_dir}/
 # not present in 470
 #install -p -m 0755 nvidia-powerd %%{buildroot}%%{_bindir}
@@ -455,7 +455,7 @@ cp -r %{driver_folder}/html %{buildroot}%{_docdir}/%{name}
 # install AppData and add modalias provides
 install -p -m 0644 %{SOURCE8} %{buildroot}%{_datadir}/appdata/
 fn=%{buildroot}%{_datadir}/appdata/com.nvidia.driver.metainfo.xml
-%{SOURCE9} supported-gpus/supported-gpus.json | xargs appstream-util add-provide ${fn} modalias
+python %{SOURCE9} supported-gpus/supported-gpus.json | xargs appstream-util add-provide ${fn} modalias
 
 install -p -m 0644 %{SOURCE3} %{buildroot}%{_sysconfdir}/X11/xorg.conf.d/10-nvidia.conf
 sed -i -e 's|@LIBDIR@|%{_libdir}|g' %{buildroot}%{_sysconfdir}/X11/xorg.conf.d/10-nvidia.conf
@@ -480,7 +480,7 @@ install -p -m 0644 %{SOURCE7} %{buildroot}/usr/lib/nvidia/
 
 # gsp.bin
 install -m 0755 -d %{buildroot}/lib/firmware/nvidia/%{version}/
-%ifarch x86_64 aarch64
+%ifarch %{x86_64} %{aarch64}
 install -p -m 0644 firmware/gsp.bin %{buildroot}/lib/firmware/nvidia/%{version}/
 %endif
 
@@ -497,7 +497,7 @@ ln -sf %{_libdir}/libnvidia-allocator.so.1 %{buildroot}%{_libdir}/gbm/nvidia-drm
 %endif
 
 # NGX Proton/Wine library
-%ifarch x86_64
+%ifarch %{x86_64}
 cp -a *.dll %{buildroot}%{_libdir}/nvidia/wine/
 %endif
 
@@ -505,12 +505,12 @@ cp -a *.dll %{buildroot}%{_libdir}/nvidia/wine/
 cp -a lib*GL*_nvidia.so* libcuda.so* libnv*.so* %{buildroot}%{_libdir}/
 cp -a libnvcuvid.so* %{buildroot}%{_libdir}/
 cp -a libvdpau_nvidia.so* %{buildroot}%{_libdir}/vdpau/
-%ifarch x86_64 aarch64
+%ifarch %{x86_64} %{aarch64}
 cp -a libnvoptix.so* %{buildroot}%{_libdir}/
 %endif
 
 # nvidia-powerd
-%ifarch x86_64
+%ifarch %{x86_64}
 # not present in 470
 #install -p -m 0644 nvidia-dbus.conf %%{buildroot}%%{_dbus_systemd_dir}/
 #install -p -m 0644 systemd/system/nvidia-powerd.service %%{buildroot}%%{_unitdir}/
@@ -531,7 +531,7 @@ install -p -m 0755 systemd/system-sleep/nvidia %{buildroot}%{_systemd_util_dir}/
 %systemd_post nvidia-resume.service
 %systemd_post nvidia-suspend.service
 
-%ifarch x86_64
+%ifarch %{x86_64}
 # not present in 470
 #%%systemd_post nvidia-powerd.service
 %endif
@@ -541,7 +541,7 @@ install -p -m 0755 systemd/system-sleep/nvidia %{buildroot}%{_systemd_util_dir}/
 %systemd_preun nvidia-resume.service
 %systemd_preun nvidia-suspend.service
 
-%ifarch x86_64
+%ifarch %{x86_64}
 # not present in 470
 #%%systemd_preun nvidia-powerd.service
 %endif
@@ -551,7 +551,7 @@ install -p -m 0755 systemd/system-sleep/nvidia %{buildroot}%{_systemd_util_dir}/
 %systemd_postun nvidia-resume.service
 %systemd_postun nvidia-suspend.service
 
-%ifarch x86_64
+%ifarch %{x86_64}
 # not present in 470
 #%%systemd_postun nvidia-powerd.service
 %endif
@@ -590,7 +590,7 @@ install -p -m 0755 systemd/system-sleep/nvidia %{buildroot}%{_systemd_util_dir}/
 %endif
 
 # nvidia-powerd
-%ifarch x86_64
+%ifarch %{x86_64}
 # not present in 470
 #%%{_unitdir}/nvidia-powerd.service
 #%%config(noreplace) %%{_dbus_systemd_dir}/nvidia-dbus.conf
@@ -604,7 +604,7 @@ install -p -m 0755 systemd/system-sleep/nvidia %{buildroot}%{_systemd_util_dir}/
 %{_bindir}/nvidia-cuda-mps-control
 %{_bindir}/nvidia-cuda-mps-server
 %{_bindir}/nvidia-debugdump
-%ifarch x86_64
+%ifarch %{x86_64}
 # not present in 470
 #%%{_bindir}/nvidia-powerd
 %endif
@@ -644,7 +644,7 @@ install -p -m 0755 systemd/system-sleep/nvidia %{buildroot}%{_systemd_util_dir}/
 %{_libdir}/libGLESv2_nvidia.so.%{version}
 %{_libdir}/libGLX_nvidia.so.0
 %{_libdir}/libGLX_nvidia.so.%{version}
-%ifarch x86_64 ppc64le aarch64
+%ifarch %{x86_64} ppc64le %{aarch64}
 %{_libdir}/libnvidia-cfg.so.1
 %{_libdir}/libnvidia-cfg.so.%{version}
 # not present in 470
@@ -657,7 +657,7 @@ install -p -m 0755 systemd/system-sleep/nvidia %{buildroot}%{_systemd_util_dir}/
 %{_libdir}/libnvidia-eglcore.so.%{version}
 %{_libdir}/libnvidia-glcore.so.%{version}
 %{_libdir}/libnvidia-glsi.so.%{version}
-%ifarch x86_64 aarch64
+%ifarch %{x86_64} %{aarch64}
 # Raytracing
 %{_libdir}/libnvidia-rtcore.so.%{version}
 %{_libdir}/libnvoptix.so.1
@@ -666,7 +666,7 @@ install -p -m 0755 systemd/system-sleep/nvidia %{buildroot}%{_systemd_util_dir}/
 %{_libdir}/libnvidia-ngx.so.%{version}
 %endif
 # Wine libraries
-%ifarch x86_64
+%ifarch %{x86_64}
 %dir %{_libdir}/nvidia
 %dir %{_libdir}/nvidia/wine
 %{_libdir}/nvidia/wine/*.dll
@@ -707,7 +707,7 @@ install -p -m 0755 systemd/system-sleep/nvidia %{buildroot}%{_systemd_util_dir}/
 %ifnarch %{ix86}
 %{_libdir}/libnvidia-vulkan-producer.so.%{version}
 %endif
-%ifarch x86_64
+%ifarch %{x86_64}
 # not present in 470
 #%%{_libdir}/libnvidia-wayland-client.so.%%{version}
 %endif
