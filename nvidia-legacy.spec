@@ -7,12 +7,8 @@
 %global _modprobe_d     %{_prefix}/lib/modprobe.d/
 %global persistenced_source %{_builddir}/nvidia-persistenced-%{version}
 %define _tar_end %{?extension}%{?!extension:bz2}
-%ifarch x86_64
-%global driver_folder %{_builddir}/NVIDIA-Linux-x86_64-%{version}
-%endif
-%ifarch aarch64
-%global driver_folder %{_builddir}/NVIDIA-Linux-aarch64-%{version}
-%endif
+
+%global driver_folder %{_builddir}/NVIDIA-Linux-%{_arch}-%{version}
 
 # =======================================================================================#
 # nvidia-driver - modified from https://github.com/NVIDIA/yum-packaging-nvidia-driver
