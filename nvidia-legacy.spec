@@ -47,9 +47,8 @@ Requires:       %{name}-kmod-common = %{version}
 
 Requires:       x11-server-xorg >= 1.19.0-3
 
-
 Provides:       %{name} = %{version}
-Obsoletes:      xorg-x11-drv-nvidia
+Obsoletes:      xorg-x11-drv-nvidia <= %{version}
 Conflicts:      nvidia
 Conflicts:      nvidia-current
 Conflicts:      nvidia-390
@@ -121,16 +120,16 @@ Requires:           libglvnd
 Requires:       vulkan-loader
 %endif
 
-Obsoletes:      xorg-x11-drv-nvidia-gl
-Obsoletes:      xorg-x11-drv-nvidia-libs
-Obsoletes:		nvidia-kernel-modules-desktop
-Obsoletes:		nvidia-kernel-modules-desktop-clang
-Obsoletes:		nvidia-kernel-modules-desktop-gcc
-Obsoletes:		nvidia-kernel-modules-rc-desktop
-Obsoletes:		nvidia-kernel-modules-server
-Obsoletes:		nvidia-kernel-modules-server-clang
-Obsoletes:		nvidia-kernel-modules-server-gcc
-Obsoletes:		nvidia-kernel-modules-rc-server
+Obsoletes:      xorg-x11-drv-nvidia-gl <= %{version}
+Obsoletes:      xorg-x11-drv-nvidia-libs <= %{version}
+Obsoletes:		nvidia-kernel-modules-desktop <= %{version}
+Obsoletes:		nvidia-kernel-modules-desktop-clang <= %{version}
+Obsoletes:		nvidia-kernel-modules-desktop-gcc <= %{version}
+Obsoletes:		nvidia-kernel-modules-rc-desktop <= %{version}
+Obsoletes:		nvidia-kernel-modules-server <= %{version}
+Obsoletes:		nvidia-kernel-modules-server-clang <= %{version}
+Obsoletes:		nvidia-kernel-modules-server-gcc <= %{version}
+Obsoletes:		nvidia-kernel-modules-rc-server <= %{version}
 Conflicts:      nvidia-x11-drv-libs
 Conflicts:      nvidia-x11-drv-libs-96xx
 Conflicts:      nvidia-x11-drv-libs-173xx
@@ -265,7 +264,7 @@ BuildRequires:  systemd-rpm-macros
 Requires:       %{name}-kmod = %{?epoch:%{epoch}:}%{version}
 Provides:       %{name}-kmod-common = %{?epoch:%{epoch}:}%{version}
 Requires:       %{name} = %{?epoch:%{epoch}:}%{version}
-Obsoletes:      cuda-nvidia-kmod-common
+Obsoletes:      cuda-nvidia-kmod-common <= %{version}
 
 %description kmod-common
 This package provides the common files required by all NVIDIA kernel module
@@ -432,6 +431,7 @@ install -p -m 0755 nvidia-settings %{buildroot}%{_bindir}
 
 # Install desktop file
 sed -i 's:__PIXMAP_PATH__:%{_datadir}/pixmaps:g' nvidia-settings.desktop
+sed -i 's:__UTILS_PATH__:%{_bindir}:g' nvidia-settings.desktop
 mkdir -p %{buildroot}%{_datadir}/{applications,pixmaps}
 desktop-file-install --dir %{buildroot}%{_datadir}/applications/ nvidia-settings.desktop
 cp nvidia-settings.png %{buildroot}%{_datadir}/pixmaps/
