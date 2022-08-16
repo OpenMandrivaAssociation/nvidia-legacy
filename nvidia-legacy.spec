@@ -567,8 +567,10 @@ install -p -m 0755 systemd/system-sleep/nvidia %{buildroot}%{_systemd_util_dir}/
 %ifnarch %{ix86}
 
 %files
-%license LICENSE
-%doc NVIDIA_Changelog README.txt html
+%{_datadir}/licenses/%{name}/LICENSE
+%{_docdir}/%{name}/NVIDIA_Changelog
+%{_docdir}/%{name}/README.txt
+%{_docdir}/%{name}/html
 %{_bindir}/nvidia-settings
 %{_mandir}/man1/nvidia-settings.1*
 %{_datarootdir}/pixmaps/nvidia-settings.png
