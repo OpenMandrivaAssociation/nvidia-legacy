@@ -36,10 +36,8 @@ Source9:	parse-supported-gpus.py
 #Patch0:         nvidia-fix-linux-5.10.patch
 Group:		Hardware
 License:	distributable
-%ifarch x86_64 aarch64 ppc64le
-BuildRequires:  lib64appstream-glib-devel >= 0.6.3
-%endif
 
+BuildRequires:  appstream-util >= 0.6.3
 BuildRequires: systemd-rpm-macros
 
 Requires:       %{name}-libs%{?_isa} = %{version}
