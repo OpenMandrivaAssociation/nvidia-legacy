@@ -10,7 +10,11 @@
 
 Summary:	Legacy binary-only driver for nvidia graphics chips
 Name:		nvidia-legacy
+%if %{version_patch}
 Version:	%{version_major}.%{version_minor}.%{version_patch}
+%else
+Version: %{version_major}.%{version_minor}
+%endif
 Release:	1
 ExclusiveArch:	%{x86_64} %{aarch64}
 Url:		http://www.nvidia.com/object/unix.html
