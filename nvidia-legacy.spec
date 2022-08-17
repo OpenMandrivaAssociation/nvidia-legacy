@@ -48,6 +48,8 @@ This package should only be used as a last resort.
 %package 32bit
 Summary:	Binary-only 32-bit driver for nvidia graphics chips
 
+Requires:	%{name} = %{version}
+
 Provides:   libGLdispatch0
 Provides:   libGL1
 Provides:   libEGL1
@@ -85,6 +87,15 @@ Provides:	should-restart = system
 Requires(post,postun):	sed dracut grub2 kmod
 BuildRequires:	kernel-devel
 
+Obsoletes:	nvidia-kernel-modules-desktop <= %{version}
+Obsoletes:	nvidia-kernel-modules-server <= %{version}
+Obsoletes:	nvidia-kernel-modules-desktop-clang <= %{version}
+Obsoletes:	nvidia-kernel-modules-server-clang <= %{version}
+Obsoletes:	nvidia-kernel-modules-desktop-rc <= %{version}
+Obsoletes:	nvidia-kernel-modules-server-rc <= %{version}
+Obsoletes:	nvidia-kernel-modules-desktop-gcc <= %{version}
+Obsoletes:	nvidia-kernel-modules-server-gcc <= %{version}
+
 %description kmod
 Kernel modules needed by the binary-only nvidia driver
 
@@ -107,6 +118,15 @@ Provides:       %{name}-kmod = %{version}
 Requires:       %{name}-kmod-common = %{version}
 Requires:       %{name}-kmod-headers = %{version}
 Requires:       dkms
+
+Obsoletes:	nvidia-kernel-modules-desktop <= %{version}
+Obsoletes:	nvidia-kernel-modules-server <= %{version}
+Obsoletes:	nvidia-kernel-modules-desktop-clang <= %{version}
+Obsoletes:	nvidia-kernel-modules-server-clang <= %{version}
+Obsoletes:	nvidia-kernel-modules-desktop-rc <= %{version}
+Obsoletes:	nvidia-kernel-modules-server-rc <= %{version}
+Obsoletes:	nvidia-kernel-modules-desktop-gcc <= %{version}
+Obsoletes:	nvidia-kernel-modules-server-gcc <= %{version}
 
 %description dkms-kmod
 This package provides the proprietary Nvidia kernel driver modules.
