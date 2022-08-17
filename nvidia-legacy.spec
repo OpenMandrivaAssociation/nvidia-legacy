@@ -159,6 +159,14 @@ sh %{S:1} --extract-only
 #%%patch0 -p1
 cp -r /usr/src/linux-$(uname -r) %{kernel_source_dir}
 
+# nvidia-settings
+# Install desktop file
+sed -i 's:__PIXMAP_PATH__:%{_datadir}/pixmaps:g' %{nvidia_driver_dir}/nvidia-settings.desktop
+sed -i 's:__UTILS_PATH__:%{_bindir}:g' %{nvidia_driver_dir}/nvidia-settings.desktop
+mkdir -p %{buildroot}%{_datadir}/{applications,pixmaps}
+desktop-file-install --dir %{buildroot}%{_datadir}/applications/ %{nvidia_driver_dir}/nvidia-settings.desktop
+cp %{nvidia_driver_dir}/nvidia-settings.png %{buildroot}%{_datadir}/pixmaps/
+
 # dkms kmod
 cp -f %{SOURCE12} %{nvidia_driver_dir}/kernel/dkms.conf
 sed -i -e 's/__VERSION_STRING/%{version}/g' %{nvidia_driver_dir}/kernel/dkms.conf
@@ -304,6 +312,8 @@ instx %{_bindir}/nvidia-smi
 inst %{_mandir}/man1/nvidia-smi.1
 instx %{_bindir}/nvidia-settings       
 inst %{_mandir}/man1/nvidia-settings.1
+inst %{_datadir}/applications/nvidia-settings.desktop
+inst %{_datadir}/pixmaps/nvidia-settings.png
 
 # glvk
 instx %{_libdir}/libnvidia-glvkspirv.so.%{version}
@@ -417,6 +427,8 @@ dkms remove -m %{dkms_name} -v %{version} --all || :
 %{_mandir}/man1/nvidia-smi.1*
 %{_bindir}/nvidia-settings
 %{_mandir}/man1/nvidia-settings.1*
+%{_datadir}/applications/nvidia-settings.desktop
+%{_datadir}/pixmaps/nvidia-settings.png
 %{_libdir}/libnvidia-glvkspirv.so*
 %{_datadir}/nvidia/nvidia-application-profiles-%{version}-rc
 %{_datadir}/nvidia/nvidia-application-profiles-%{version}-key-documentation
