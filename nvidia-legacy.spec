@@ -157,7 +157,6 @@ URL:            http://www.nvidia.com/object/unix.html
 BuildArch:      noarch
 Source4:	60-nvidia.rules
 Source6:	99-nvidia.conf
-Source13: nvidia.conf
 
 BuildRequires:  systemd-rpm-macros
 
