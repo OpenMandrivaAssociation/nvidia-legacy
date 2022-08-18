@@ -301,7 +301,10 @@ inst %{_sysconfdir}/OpenCL/vendors/nvidia.icd
 instx %{_libdir}/libnvidia-cfg.so.%{version}
 sl nvidia-cfg 1
 
+%ifarch %{x86_64
 instx %{_libdir}/libnvidia-compiler.so.%{version}
+%endif
+
 instx %{_libdir}/libnvidia-opencl.so.%{version}
 
 # Encode (what is this?)
