@@ -301,7 +301,7 @@ inst %{_sysconfdir}/OpenCL/vendors/nvidia.icd
 instx %{_libdir}/libnvidia-cfg.so.%{version}
 sl nvidia-cfg 1
 
-%ifarch %{x86_64
+%ifarch %{x86_64}
 instx %{_libdir}/libnvidia-compiler.so.%{version}
 %endif
 
@@ -317,11 +317,15 @@ sl nvidia-fbc 1
 
 # Yuck...
 instx %{_libdir}/libnvidia-gtk2.so.%{version}
+%ifarch %{x86_64}
 instx %{_libdir}/libnvidia-gtk3.so.%{version}
+%endif
 
 # IFR
+%ifarch %{x86_64}
 instx %{_libdir}/libnvidia-ifr.so.%{version}
 sl nvidia-ifr 1
+%endif
 
 # VDPAU
 instx %{_libdir}/vdpau/libvdpau_nvidia.so.%{version}
@@ -440,13 +444,17 @@ dkms remove -m %{dkms_name} -v %{version} --all || :
 %{_libdir}/libnvidia-tls.so*
 %{_sysconfdir}/OpenCL/vendors/nvidia.icd
 %{_libdir}/libnvidia-cfg.so*
+%ifarch %{x86_64}
 %{_libdir}/libnvidia-compiler.so*
+%endif
 %{_libdir}/libnvidia-opencl.so*
 %{_libdir}/libnvidia-encode.so*
 %{_libdir}/libnvidia-fbc.so*
 %{_libdir}/libnvidia-gtk2.so*
+%ifarch %{x86_64}
 %{_libdir}/libnvidia-gtk3.so*
 %{_libdir}/libnvidia-ifr.so*
+%endif
 %{_libdir}/vdpau/libvdpau_nvidia.so*
 %{_bindir}/nvidia-bug-report.sh
 %{_bindir}/nvidia-smi
