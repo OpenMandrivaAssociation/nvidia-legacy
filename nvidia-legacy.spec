@@ -77,8 +77,8 @@ This package should only be used as a last resort.
 %endif
 
 %package kmod
-%define kversion %(rpm -q --qf '%%{VERSION}-%%{RELEASE}\\n' kernel-devel |tail -n1)
-%define kdir %(rpm -q --qf '%%{VERSION}-%%{RELEASE}%%{DISTTAG}\\n' kernel-devel |tail -n1)
+%define kversion %(rpm -q --qf '%%{VERSION}-%%{RELEASE}\\n' kernel-desktop-devel |tail -n1)
+%define kdir %(rpm -q --qf '%%{VERSION}-desktop-%%{RELEASE}%%{DISTTAG}\\n' kernel-desktop-devel |tail -n1)
 Summary:	Kernel modules needed by the binary-only nvidia driver
 Provides:	%{name}-kmod = %{EVRD}
 Requires: %{name}-kmod-common = %{version}
@@ -89,7 +89,7 @@ Conflicts:	kernel > %{kversion}
 Group:		Hardware
 Provides:	should-restart = system
 Requires(post,postun):	sed dracut grub2 kmod
-BuildRequires:	kernel-devel
+BuildRequires:	kernel-desktop-devel
 
 Obsoletes:	nvidia-kernel-modules-desktop <= %{version}
 Obsoletes:	nvidia-kernel-modules-server <= %{version}
