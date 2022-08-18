@@ -1,3 +1,3 @@
-# nvidia
-This repository will alway contain the latest nvidia long lived driver. The legacy 390 driver is in nvidia-390
-The latest nvidia short lived driver lives in nvidia-latest.
+# nvidia=legacy
+This repository will contain the latest legacy proprietary NVIDIA driver.
+The latest nvidia short lived driver  in the `nvidia` repository.
