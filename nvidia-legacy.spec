@@ -4,7 +4,7 @@
 %global version_patch 03
 %global _dracut_conf_d  %{_prefix}/lib/dracut/dracut.conf.d
 %global _modprobe_d     %{_prefix}/lib/modprobe.d/
-%global kernel_source_dir %{_builddir}/linux-$(uname -r)
+%global kernel_source_dir %{_builddir}/linux-%{kdir}
 %global nvidia_driver_dir %{_builddir}/NVIDIA-Linux-%{_arch}-%{version}
 %global dkms_name nvidia
 
@@ -77,8 +77,8 @@ This package should only be used as a last resort.
 %endif
 
 %package kmod
-%define kversion %(rpm -q --qf '%%{VERSION}-%%{RELEASE}\\n' kernel-desktop-devel |tail -n1)
-%define kdir %(rpm -q --qf '%%{VERSION}-desktop-%%{RELEASE}%%{DISTTAG}\\n' kernel-desktop-devel |tail -n1)
+%define kversion %(rpm -q --qf '%%{VERSION}-%%{RELEASE}\\n' kernel-devel |tail -n1)
+%define kdir %(rpm -q --qf '%%{VERSION}-%%{RELEASE}%%{DISTTAG}\\n' kernel-devel |tail -n1)
 Summary:	Kernel modules needed by the binary-only nvidia driver
 Provides:	%{name}-kmod = %{EVRD}
 Requires: %{name}-kmod-common = %{version}
@@ -180,7 +180,7 @@ sh %{S:1} --extract-only
 %endif
 %endif
 #%%patch0 -p1
-cp -r /usr/src/linux-$(uname -r) %{kernel_source_dir}
+cp -r /usr/src/linux-%{kdir} %{kernel_source_dir}
 
 # nvidia-settings
 # Install desktop file
