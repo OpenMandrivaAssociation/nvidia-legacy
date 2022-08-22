@@ -31,7 +31,6 @@ Requires:	%{name}-kmod = %{EVRD}
 Requires:	libglvnd-egl
 Requires:	egl-wayland
 Requires:	vulkan-loader
-%{expand:%(for i in %{kernels}; do echo "BuildRequires: kernel-${i}-devel"; done)}
 
 %description
 This is a binary-only driver for nvidia graphics chips.
@@ -87,11 +86,11 @@ for i in %{kernels}; do
 	cat <<EOF
 %package kmod-$i
 Summary:	Kernel modules needed by the binary-only nvidia driver for kernel $i %%{kversion_$K}
-Release:	%{release}_$(rpm -q --qf '%%{VERSION}-%%{RELEASE}\n' kernel-${i}-devel |tail -n1 |sed -e 's,-,_,g')
+Release:	%{release}_$(rpm -q --qf '%%{VERSION}-%%{RELEASE}\n' kernel-${i}-devel |tail -n1 |sed -e 's,-,_,g;s, ,_,g')
 Provides:	%{name}-kmod = %{EVRD}
 Requires:	%{name}-kmod-common = %{EVRD}
-Requires:	kernel-$i = $(rpm -q --qf '%%{VERSION}-%%{RELEASE}\n' kernel-${i}-devel |tail -n1)
-Conflicts:	kernel-$i > $(rpm -q --qf '%%{VERSION}-%%{RELEASE}\n' kernel-${i}-devel |tail -n1)
+Requires:	kernel-$i = $(rpm -q --qf '%%{VERSION}-%%{RELEASE}\n' kernel-${i}-devel |tail -n1 |sed -e 's, ,_,g;s,^package.*,1.0,')
+Conflicts:	kernel-$i > $(rpm -q --qf '%%{VERSION}-%%{RELEASE}\n' kernel-${i}-devel |tail -n1 |sed -e 's, ,_,g;s,^package.*,1.0,')
 Group:		Hardware
 Provides:	should-restart = system
 Requires(post,postun):	sed dracut grub2 kmod
