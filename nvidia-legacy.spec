@@ -31,6 +31,7 @@ Requires:	%{name}-kmod = %{EVRD}
 Requires:	libglvnd-egl
 Requires:	egl-wayland
 Requires:	vulkan-loader
+%{expand:%(for i in %{kernels}; do echo "BuildRequires: kernel-${i}-devel"; done)}
 
 %description
 This is a binary-only driver for nvidia graphics chips.
