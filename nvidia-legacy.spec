@@ -14,7 +14,7 @@
 Summary:	Legacy binary-only driver for nvidia graphics chips
 Name:		nvidia-legacy
 Version:	470.141.03
-Release:	1
+Release:	2
 ExclusiveArch:	%{x86_64} %{aarch64}
 Url:		http://www.nvidia.com/object/unix.html
 Source0:	http://download.nvidia.com/XFree86/Linux-x86_64/%{version}/NVIDIA-Linux-x86_64-%{version}.run
@@ -22,6 +22,7 @@ Source1:	http://download.nvidia.com/XFree86/Linux-aarch64/%{version}/NVIDIA-Linu
 Source10:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11-extra/nvidia/xorg-nvidia.conf
 Source11:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11-extra/nvidia/modprobe-nvidia.conf
 Patch0:         https://gist.githubusercontent.com/joanbm/9f5e8150723912b3809f4de536974155/raw/4ddb9a693a9c4b83194dabac21a773384ee939a0/nvidia-470xx-fix-linux-6.0.patch
+Patch1:		nvidia-clang-15.patch
 Group:		Hardware
 License:	distributable
 # Just to be on the safe side, it may not be wise
