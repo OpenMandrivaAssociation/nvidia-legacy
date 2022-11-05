@@ -23,6 +23,7 @@ Source10:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11
 Source11:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11-extra/nvidia/modprobe-nvidia.conf
 Patch0:         https://gist.githubusercontent.com/joanbm/9f5e8150723912b3809f4de536974155/raw/4ddb9a693a9c4b83194dabac21a773384ee939a0/nvidia-470xx-fix-linux-6.0.patch
 Patch1:		nvidia-clang-15.patch
+Patch2:		nvidia-470-kernel-6.1.patch
 Group:		Hardware
 License:	distributable
 # Just to be on the safe side, it may not be wise

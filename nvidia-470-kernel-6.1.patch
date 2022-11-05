@@ -1,0 +1,51 @@
+diff -up kernel/nvidia/os-interface.c.omv~ kernel/nvidia/os-interface.c
+--- kernel/nvidia/os-interface.c.omv~	2022-11-05 23:23:28.191944970 +0100
++++ kernel/nvidia/os-interface.c	2022-11-05 23:25:04.891541462 +0100
+@@ -1105,11 +1105,12 @@ void NV_API_CALL os_get_screen_info(
+     NvU64 consoleBar2Address
+ )
+ {
+-#if defined(CONFIG_FB)
+-    int i;
+     *pPhysicalAddress = 0;
+     *pFbWidth = *pFbHeight = *pFbDepth = *pFbPitch = 0;
+ 
++#if defined(CONFIG_FB) && defined(NV_NUM_REGISTERED_FB_PRESENT)
++    int i;
++
+     for (i = 0; i < num_registered_fb; i++)
+     {
+         if (!registered_fb[i])
+@@ -1127,6 +1128,32 @@ void NV_API_CALL os_get_screen_info(
+             break;
+         }
+     }
++#elif 1
++    /*
++     * If there is not a framebuffer console, return 0 size.
++     *
++     * orig_video_isVGA is set to 1 during early Linux kernel
++     * initialization, and then will be set to a value, such as
++     * VIDEO_TYPE_VLFB or VIDEO_TYPE_EFI if an fbdev console is used.
++     */
++    if (screen_info.orig_video_isVGA > 1)
++    {
++        NvU64 physAddr = screen_info.lfb_base;
++#if 1 //defined(VIDEO_CAPABILITY_64BIT_BASE)
++        physAddr |= (NvU64)screen_info.ext_lfb_base << 32;
++#endif
++
++        /* Make sure base address is mapped to GPU BAR */
++        if ((physAddr == consoleBar1Address) ||
++            (physAddr == consoleBar2Address))
++        {
++            *pPhysicalAddress = physAddr;
++            *pFbWidth = screen_info.lfb_width;
++            *pFbHeight = screen_info.lfb_height;
++            *pFbDepth = screen_info.lfb_depth;
++            *pFbPitch = screen_info.lfb_linelength;
++        }
++    }
+ #else
+     *pPhysicalAddress = 0;
+     *pFbWidth = *pFbHeight = *pFbDepth = *pFbPitch = 0;
