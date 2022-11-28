@@ -13,17 +13,17 @@
 
 Summary:	Legacy binary-only driver for nvidia graphics chips
 Name:		nvidia-legacy
-Version:	470.141.03
-Release:	2
+Version:	470.161.03
+Release:	1
 ExclusiveArch:	%{x86_64} %{aarch64}
 Url:		http://www.nvidia.com/object/unix.html
 Source0:	http://download.nvidia.com/XFree86/Linux-x86_64/%{version}/NVIDIA-Linux-x86_64-%{version}.run
 Source1:	http://download.nvidia.com/XFree86/Linux-aarch64/%{version}/NVIDIA-Linux-aarch64-%{version}.run
 Source10:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11-extra/nvidia/xorg-nvidia.conf
 Source11:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11-extra/nvidia/modprobe-nvidia.conf
-Patch0:         https://gist.githubusercontent.com/joanbm/9f5e8150723912b3809f4de536974155/raw/4ddb9a693a9c4b83194dabac21a773384ee939a0/nvidia-470xx-fix-linux-6.0.patch
+#Patch0:         https://gist.githubusercontent.com/joanbm/9f5e8150723912b3809f4de536974155/raw/4ddb9a693a9c4b83194dabac21a773384ee939a0/nvidia-470xx-fix-linux-6.0.patch
 Patch1:		nvidia-clang-15.patch
-Patch2:		nvidia-470-kernel-6.1.patch
+Patch2:		nvidia-470.161-kernel-6.1.patch
 Group:		Hardware
 License:	distributable
 # Just to be on the safe side, it may not be wise
@@ -84,7 +84,7 @@ This package should only be used as a last resort.
 %{expand:%(for i in %{kernels}; do
 	K=$(echo $i |sed -e 's,-,_,g')
 	echo "%%global kversion_$K $(rpm -q --qf '%%{VERSION}-%%{RELEASE}\n' kernel-${i}-devel |tail -n1)"
-	echo "%%global kdir_$K $(rpm -q --qf %%{VERSION}-$i-%%{RELEASE}%%{DISTTAG} kernel-${i}-devel |tail -n1)"
+	echo "%%global kdir_$K $(rpm -q --qf "%%{VERSION}-$i-%%{RELEASE}%%{DISTTAG}\n" kernel-${i}-devel |tail -n1)"
 done)}
 %(
 for i in %{kernels}; do

@@ -1,0 +1,21 @@
+diff -up kernel/nvidia/os-interface.c.omv~ kernel/nvidia/os-interface.c
+--- kernel/nvidia/os-interface.c.omv~	2022-11-28 01:52:51.960273567 +0100
++++ kernel/nvidia/os-interface.c	2022-11-28 01:54:05.462736669 +0100
+@@ -1108,7 +1108,7 @@ void NV_API_CALL os_get_screen_info(
+     *pPhysicalAddress = 0;
+     *pFbWidth = *pFbHeight = *pFbDepth = *pFbPitch = 0;
+ 
+-#if defined(CONFIG_FB) && defined(NV_NUM_REGISTERED_FB_PRESENT)
++#if defined(CONFIG_FB) && defined(NV_NUM_REGISTERED_FB_PRESENT) && LINUX_VERSION_CODE < KERNEL_VERSION(6, 1, 0)
+     if (num_registered_fb > 0)
+     {
+         int i;
+@@ -1157,6 +1157,8 @@ void NV_API_CALL os_get_screen_info(
+             *pFbPitch = screen_info.lfb_linelength;
+         }
+     }
++#else
++#error Unsupported kernel
+ #endif
+ }
+ 
