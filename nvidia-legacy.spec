@@ -6,7 +6,8 @@
 %global dkms_name nvidia
 
 %ifarch %{x86_64}
-%global kernels desktop server desktop-gcc server-gcc rc-desktop rc-server rc-desktop-gcc rc-server-gcc
+%global kernels desktop server rc-desktop rc-server
+# desktop-gcc server-gcc rc-desktop-gcc rc-server-gcc
 %else
 %global kernels desktop server rc-desktop rc-server
 %endif
@@ -14,7 +15,7 @@
 Summary:	Legacy binary-only driver for nvidia graphics chips
 Name:		nvidia-legacy
 Version:	470.161.03
-Release:	5
+Release:	6
 ExclusiveArch:	%{x86_64} %{aarch64}
 Url:		http://www.nvidia.com/object/unix.html
 Source0:	http://download.nvidia.com/XFree86/Linux-x86_64/%{version}/NVIDIA-Linux-x86_64-%{version}.run
