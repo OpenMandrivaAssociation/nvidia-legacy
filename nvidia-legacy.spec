@@ -22,10 +22,11 @@ Source0:	http://download.nvidia.com/XFree86/Linux-x86_64/%{version}/NVIDIA-Linux
 Source1:	http://download.nvidia.com/XFree86/Linux-aarch64/%{version}/NVIDIA-Linux-aarch64-%{version}.run
 Source10:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11-extra/nvidia/xorg-nvidia.conf
 Source11:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11-extra/nvidia/modprobe-nvidia.conf
-#Patch0:         https://gist.githubusercontent.com/joanbm/9f5e8150723912b3809f4de536974155/raw/4ddb9a693a9c4b83194dabac21a773384ee939a0/nvidia-470xx-fix-linux-6.0.patch
 Patch1:		nvidia-clang-15.patch
 Patch2:		nvidia-470.161-kernel-6.1.patch
 #Patch3:		kernel-6.2.patch
+# From https://aur.archlinux.org/cgit/aur.git/tree/kernel-6.3.patch?h=nvidia-470xx-utils
+Patch4:         kernel-6.3.patch
 Group:		Hardware
 License:	distributable
 # Just to be on the safe side, it may not be wise
@@ -208,7 +209,7 @@ package variants.
 
 %prep
 rm -rf %{nvidia_driver_dir}
-rm -rf %{kernel_source_dir}
+rm -rf %{kernel_source_dir}-*
 rm -rf modules-*
 %ifarch %{x86_64}
 sh %{S:0} --extract-only
@@ -258,6 +259,8 @@ for i in %{kernels}; do
 	KERNEL_SOURCES=%{kernel_source_dir}-$i
 	KERNEL_OUTPUT=%{kernel_source_dir}-$i
 
+	sed -i -e '/Werror=unused-command-line-argument/d' ${KERNEL_SOURCES}/scripts/Makefile.clang
+
 	# These could affect the linking so we unset them both there and in %%post
 	unset LD_RUN_PATH
 	unset LD_LIBRARY_PATH
@@ -268,7 +271,7 @@ for i in %{kernels}; do
 	if echo $i |grep -q gcc; then
 		%{make_build} SYSSRC=${KERNEL_SOURCES} SYSOUT=${KERNEL_OUTPUT} CC=gcc CXX=g++
 	else
-		%{make_build} SYSSRC=${KERNEL_SOURCES} SYSOUT=${KERNEL_OUTPUT} IGNORE_CC_MISMATCH=1
+		%{make_build} SYSSRC=${KERNEL_SOURCES} SYSOUT=${KERNEL_OUTPUT} IGNORE_CC_MISMATCH=1 LLVM=1
 	fi
 
 	mkdir ../../modules-$i
