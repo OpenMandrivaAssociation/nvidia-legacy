@@ -6,8 +6,9 @@
 %global dkms_name nvidia
 
 %ifarch %{x86_64}
-%global kernels desktop server rc-desktop rc-server
-# desktop-gcc server-gcc rc-desktop-gcc rc-server-gcc
+%global kernels desktop server
+# 6.5 isn't supported yet
+# rc-desktop rc-server
 %else
 %global kernels desktop server rc-desktop rc-server
 %endif
