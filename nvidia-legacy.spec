@@ -6,9 +6,7 @@
 %global dkms_name nvidia
 
 %ifarch %{x86_64}
-%global kernels desktop server
-# 6.5 isn't supported yet
-# rc-desktop rc-server
+%global kernels desktop server rc-desktop rc-server
 %else
 %global kernels desktop server rc-desktop rc-server
 %endif
@@ -25,10 +23,8 @@ Source10:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11
 Source11:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11-extra/nvidia/modprobe-nvidia.conf
 Patch1:		nvidia-clang-15.patch
 Patch2:		nvidia-470.161-kernel-6.1.patch
-#Patch3:		kernel-6.2.patch
-# From https://aur.archlinux.org/cgit/aur.git/tree/kernel-6.3.patch?h=nvidia-470xx-utils
-#Patch4:         kernel-6.3.patch
-#Patch5:		nvidia-470xx-fix-linux-6.4.patch
+Patch3:		https://aur.archlinux.org/cgit/aur.git/plain/kernel-6.4.patch?h=nvidia-470xx-utils#/kernel-6.4.patch
+Patch4:		https://aur.archlinux.org/cgit/aur.git/plain/kernel-6.5.patch?h=nvidia-470xx-utils#/kernel-6.5.patch
 Group:		Hardware
 License:	distributable
 # Just to be on the safe side, it may not be wise
