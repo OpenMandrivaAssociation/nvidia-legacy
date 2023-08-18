@@ -1,3 +1,5 @@
+%global optflags %{optflags} -Wno-int-conversion
+
 %global debug_package %{nil}
 %global _dracut_conf_d  %{_prefix}/lib/dracut/dracut.conf.d
 %global _modprobe_d     %{_prefix}/lib/modprobe.d/
