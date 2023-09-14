@@ -5,16 +5,20 @@
 %global nvidia_driver_dir %{_builddir}/NVIDIA-Linux-%{_arch}-%{version}
 %global dkms_name nvidia
 
+# There's currently no way to make this work with 6.6 series kernels
+# (therefore no rc-*)
 %ifarch %{x86_64}
-%global kernels desktop server rc-desktop rc-server
+%global kernels desktop server
+#rc-desktop rc-server
 %else
-%global kernels desktop server rc-desktop rc-server
+%global kernels desktop server
+#rc-desktop rc-server
 %endif
 
 Summary:	Legacy binary-only driver for nvidia graphics chips
 Name:		nvidia-legacy
 Version:	470.199.02
-Release:	15
+Release:	16
 ExclusiveArch:	%{x86_64} %{aarch64}
 Url:		http://www.nvidia.com/object/unix.html
 Source0:	http://download.nvidia.com/XFree86/Linux-x86_64/%{version}/NVIDIA-Linux-x86_64-%{version}.run
