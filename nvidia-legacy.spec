@@ -31,7 +31,7 @@ Patch3:		https://aur.archlinux.org/cgit/aur.git/plain/kernel-6.4.patch?h=nvidia-
 Patch4:		https://aur.archlinux.org/cgit/aur.git/plain/kernel-6.5.patch?h=nvidia-470xx-utils#/kernel-6.5.patch
 Patch5:		https://aur.archlinux.org/cgit/aur.git/plain/kernel-6.6.patch?h=nvidia-470xx-utils#/kernel-6.6.patch
 %ifarch %{aarch64}
-Patch5:		nvidia-470-aarch64-build-fixes.patch
+Patch6:		nvidia-470-aarch64-build-fixes.patch
 %endif
 Group:		Hardware
 License:	distributable
