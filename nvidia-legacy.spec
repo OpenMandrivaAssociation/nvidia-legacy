@@ -18,7 +18,7 @@
 Summary:	Legacy binary-only driver for nvidia graphics chips
 Name:		nvidia-legacy
 Version:	470.199.02
-Release:	22
+Release:	23
 ExclusiveArch:	%{x86_64} %{aarch64}
 Url:		http://www.nvidia.com/object/unix.html
 Source0:	http://download.nvidia.com/XFree86/Linux-x86_64/%{version}/NVIDIA-Linux-x86_64-%{version}.run
@@ -29,6 +29,7 @@ Patch1:		nvidia-clang-15.patch
 Patch2:		nvidia-470.161-kernel-6.1.patch
 Patch3:		https://aur.archlinux.org/cgit/aur.git/plain/kernel-6.4.patch?h=nvidia-470xx-utils#/kernel-6.4.patch
 Patch4:		https://aur.archlinux.org/cgit/aur.git/plain/kernel-6.5.patch?h=nvidia-470xx-utils#/kernel-6.5.patch
+Patch5:		https://aur.archlinux.org/cgit/aur.git/plain/kernel-6.6.patch?h=nvidia-470xx-utils#/kernel-6.6.patch
 %ifarch %{aarch64}
 Patch5:		nvidia-470-aarch64-build-fixes.patch
 %endif
