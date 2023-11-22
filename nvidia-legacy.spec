@@ -26,7 +26,7 @@ Source11:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11
 Patch1:		nvidia-clang-15.patch
 Patch2:		nvidia-470.161-kernel-6.1.patch
 Patch3:		https://aur.archlinux.org/cgit/aur.git/plain/kernel-6.4.patch?h=nvidia-470xx-utils#/kernel-6.4.patch
-Patch4:		https://aur.archlinux.org/cgit/aur.git/plain/kernel-6.5.patch?h=nvidia-470xx-utils#/kernel-6.5.patch
+#Patch4:		https://aur.archlinux.org/cgit/aur.git/plain/kernel-6.5.patch?h=nvidia-470xx-utils#/kernel-6.5.patch
 Patch5:		https://aur.archlinux.org/cgit/aur.git/plain/kernel-6.6.patch?h=nvidia-470xx-utils#/kernel-6.6.patch
 %ifarch %{aarch64}
 Patch6:		nvidia-470-aarch64-build-fixes.patch
