@@ -16,7 +16,7 @@
 Summary:	Legacy binary-only driver for nvidia graphics chips
 Name:		nvidia-legacy
 Version:	470.223.02
-Release:	3
+Release:	4
 ExclusiveArch:	%{x86_64} %{aarch64}
 Url:		http://www.nvidia.com/object/unix.html
 Source0:	dummy.tar
