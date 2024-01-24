@@ -16,7 +16,7 @@
 Summary:	Legacy binary-only driver for nvidia graphics chips
 Name:		nvidia-legacy
 Version:	470.223.02
-Release:	5
+Release:	6
 ExclusiveArch:	%{x86_64} %{aarch64}
 Url:		http://www.nvidia.com/object/unix.html
 Source0:	dummy.tar
@@ -33,6 +33,7 @@ Patch3:		https://aur.archlinux.org/cgit/aur.git/plain/kernel-6.4.patch?h=nvidia-
 %ifarch %{aarch64}
 Patch6:		nvidia-470-aarch64-build-fixes.patch
 %endif
+Patch7:		nvidia-545.29.06-default-modeset.patch
 Group:		Hardware
 License:	distributable
 # Just to be on the safe side, it may not be wise

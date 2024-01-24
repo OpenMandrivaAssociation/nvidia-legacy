@@ -1,0 +1,14 @@
+diff -up kernel/nvidia-drm/nvidia-drm-linux.c.4~ kernel/nvidia-drm/nvidia-drm-linux.c
+--- kernel/nvidia-drm/nvidia-drm-linux.c.4~	2024-01-24 19:45:38.629281889 +0100
++++ kernel/nvidia-drm/nvidia-drm-linux.c	2024-01-24 19:46:07.981592318 +0100
+@@ -41,8 +41,8 @@
+ 
+ MODULE_PARM_DESC(
+     modeset,
+-    "Enable atomic kernel modesetting (1 = enable, 0 = disable (default))");
+-bool nv_drm_modeset_module_param = false;
++    "Enable atomic kernel modesetting (1 = enable (default), 0 = disable)");
++bool nv_drm_modeset_module_param = true;
+ module_param_named(modeset, nv_drm_modeset_module_param, bool, 0400);
+ 
+ void *nv_drm_calloc(size_t nmemb, size_t size)
