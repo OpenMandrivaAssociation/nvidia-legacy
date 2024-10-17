@@ -18,7 +18,7 @@ Name:		nvidia-legacy
 Version:	470.223.02
 Release:	6
 ExclusiveArch:	%{x86_64} %{aarch64}
-Url:		http://www.nvidia.com/object/unix.html
+Url:		https://www.nvidia.com/object/unix.html
 Source0:	dummy.tar
 Source1:	http://download.nvidia.com/XFree86/Linux-x86_64/%{version}/NVIDIA-Linux-x86_64-%{version}.run
 Source2:	http://download.nvidia.com/XFree86/Linux-aarch64/%{version}/NVIDIA-Linux-aarch64-%{version}.run
@@ -126,7 +126,7 @@ Kernel modules needed by the binary-only nvidia driver
 %package dkms-kmod
 License:        NVIDIA License
 Summary:        NVIDIA display driver kernel module. **This is an unsupported proprietary driver. Use with caution!
-URL:            http://www.nvidia.com/object/unix.html
+URL:            https://www.nvidia.com/object/unix.html
 
 # Package is not noarch as it contains pre-compiled binary code
 ExclusiveArch:  %{x86_64} ppc64le %{aarch64}
@@ -168,7 +168,7 @@ NVIDIA header files for precompiled streams
 %package kmod-common
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 License:        NVIDIA Licensefile:///home/nreist/Development/Source/Repos/nvidia-legacy/nvidia-legacy.spec
-URL:            http://www.nvidia.com/object/unix.html
+URL:            https://www.nvidia.com/object/unix.html
 
 BuildArch:      noarch
 Source4:	60-nvidia.rules
